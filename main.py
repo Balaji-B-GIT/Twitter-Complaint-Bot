@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from dotenv import load_dotenv
 import os
@@ -45,6 +46,30 @@ class InternetSpeedTwitterBot:
         # print(self.driver.title)
         email = self.driver.find_element(By.TAG_NAME,value="input")
         email.send_keys(x_email)
+
+        next_button = self.driver.find_element(By.XPATH,value = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/button[2]')
+        next_button.click()
+
+        time.sleep(5)
+        try:
+            username = self.driver.find_element(By.TAG_NAME,value="input")
+            username.send_keys("FakeAccForPy")
+            time.sleep(2)
+            username.send_keys(Keys.ENTER)
+            time.sleep(2)
+            pass_input = self.driver.find_element(By.NAME, value="password")
+            pass_input.send_keys(x_password)
+            time.sleep(3)
+            log_in = self.driver.find_element(By.XPATH,
+                                              value='//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button')
+            log_in.click()
+
+        except NoSuchElementException:
+            pass_input = self.driver.find_element(By.NAME,value="password")
+            pass_input.send_keys(x_password)
+            time.sleep(3)
+            log_in = self.driver.find_element(By.XPATH,value = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button')
+            log_in.click()
 
 
 ist = InternetSpeedTwitterBot()
