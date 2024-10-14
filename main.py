@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException,ElementNotInteractableException
 from dotenv import load_dotenv
 import os
 import time
@@ -23,18 +23,15 @@ class InternetSpeedTwitterBot:
         time.sleep(5)
         start = self.driver.find_element(By.CLASS_NAME, value="js-start-test")
         start.click()
-        time.sleep(40)
-        try:
-            download_speed = float(self.driver.find_element(By.XPATH, value ='//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span').text)
-            upload_speed = float(self.driver.find_element(By.XPATH, value ='//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[2]/div/div[2]/span').text)
-            print(download_speed)
-            print(upload_speed)
-            if download_speed < self.down:
-                print(f"Brought {self.down}mbps plan but getting only {download_speed}mbps")
-        except NoSuchElementException:
-            time.sleep(10)
+        time.sleep(60)
+        download_speed = float(self.driver.find_element(By.XPATH, value ='//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span').text)
+        upload_speed = float(self.driver.find_element(By.XPATH, value ='//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[3]/div[3]/div/div[3]/div/div/div[2]/div[1]/div[2]/div/div[2]/span').text)
+        # print(download_speed)
+        # print(upload_speed)
+        if download_speed < self.down:
+            return f"Heyy ACT!!!Brought {self.down}mbps plan but getting only {download_speed}mbps"
 
-    def tweet_at_provider(self):
+    def tweet_at_provider(self,tweet):
         self.driver.get(self.twitter_url)
         time.sleep(3)
         sign_in = self.driver.find_element(By.LINK_TEXT,value="Sign in")
@@ -64,13 +61,21 @@ class InternetSpeedTwitterBot:
                                               value='//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button')
             log_in.click()
 
-        except NoSuchElementException:
+        except ElementNotInteractableException:
             pass_input = self.driver.find_element(By.NAME,value="password")
             pass_input.send_keys(x_password)
             time.sleep(3)
             log_in = self.driver.find_element(By.XPATH,value = '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button')
             log_in.click()
+        time.sleep(13)
+        tweet_input = self.driver.find_element(By.XPATH,value='//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div/div/div/div/div[2]/div/div/div/div')
+        tweet_input.click()
+        time.sleep(2)
+        tweet_input.send_keys(tweet)
+        time.sleep(2)
+        post = self.driver.find_element(By.XPATH,value='//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button')
+        post.click()
 
 
 ist = InternetSpeedTwitterBot()
-ist.tweet_at_provider()
+ist.tweet_at_provider(ist.get_internet_speed())
